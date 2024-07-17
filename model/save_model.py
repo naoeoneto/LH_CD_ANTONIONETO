@@ -7,23 +7,17 @@ from sklearn.metrics import mean_absolute_error
 from sklearn.model_selection import train_test_split
 import pickle
 
-# Carregar os dados
 file_path = 'data/desafio_indicium_imdb.csv'
 df = pd.read_csv(file_path)
 
-# Limpar dados
 df = df.dropna(subset=['IMDB_Rating', 'Meta_score', 'Gross'])  # Exemplo
 df['Gross'] = df['Gross'].str.replace(',', '').astype(float)
 df = df.assign(Genre=df['Genre'].str.split(',')).explode('Genre')
-
-# Excluir linhas com NaN antes de passar pelo processador
 df = df.dropna()
 
-# Dividir dados
 X = df.drop(columns=['IMDB_Rating', 'Series_Title', 'Overview'])
 y = df['IMDB_Rating']
 
-# Definir transformações
 numeric_features = ['Meta_score', 'No_of_Votes', 'Gross']
 categorical_features = ['Released_Year', 'Runtime', 'Certificate', 'Genre', 'Director', 'Star1', 'Star2', 'Star3', 'Star4']
 
