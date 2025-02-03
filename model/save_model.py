@@ -10,22 +10,12 @@ import numpy as np
 file_path = 'data/teste_indicium_precificacao.csv'
 df = pd.read_csv(file_path)
 
-# Calculando os quartis
 Q1 = df['price'].quantile(0.25)
 Q3 = df['price'].quantile(0.75)
-
-# Calculando o intervalo interquartil (IQR)
 IQR = Q3 - Q1
 
-# Definindo os limites para remoção de outliers
 limite_inferior = Q1 - 1.5 * IQR
 limite_superior = Q3 + 1.5 * IQR
-
-# print("Q1R:", Q1)
-# print("Q3:", Q3)
-# print("IQR:", IQR)
-# print("Limite Inferior:", limite_inferior)
-# print("Limite Superior:", limite_superior)
 
 df = df[(df['price'] >= limite_inferior) & (df['price'] <= limite_superior)]
 
@@ -33,7 +23,6 @@ df = df.dropna(axis=0)
 y = df['price']
 features = ['id', 'bairro_group', 'bairro', 'latitude', 'longitude', 'room_type', 'minimo_noites', 'numero_de_reviews', 'reviews_por_mes', 'disponibilidade_365']
 X = df[features]
-
 
 label_enc = LabelEncoder()
 X['bairro'] = label_enc.fit_transform(X['bairro'])
@@ -45,7 +34,6 @@ X_encoded_df = pd.DataFrame(X_encoded, columns=encoder.get_feature_names_out(['b
 X_encoded_df.index = X.index
 X = pd.concat([X, X_encoded_df], axis=1).drop(columns=['bairro_group', 'room_type'])
 
-
 param_grid = {
     'n_estimators': [10, 50, 100, 200],
     'max_depth': [None, 10, 20, 30],
@@ -55,7 +43,6 @@ param_grid = {
 }
 
 train_X, val_X, train_y, val_y = train_test_split(X, y, random_state=0, test_size=0.2)
-
 
 rf_model = RandomForestRegressor(random_state=42)
 random_search = RandomizedSearchCV(
@@ -79,7 +66,6 @@ mse = mean_squared_error(val_y, predictions)
 rmse = np.sqrt(mse)
 
 print(f"Novo RMSE após ajuste dos hiperparâmetros: {rmse:.2f}")
-
 
 with open('model/modelo.pkl', 'wb') as file:
      pickle.dump({
