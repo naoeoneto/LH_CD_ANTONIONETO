@@ -1,15 +1,19 @@
 # LH_CD_ANTONIONETO
 O presente arquivo foi criado para o desafio Lighthouse, da Indicium Tech. Seu objetivo é, a partir de uma base de dados, fazer uma análise de previsão de informação solicitada.
 
-**Para rodar esse projeto em seu computador, é necessário seguir os seguintes passos:**
+---
 
-1. Crie um ambiente virtual
+## **Como rodar este projeto no seu computador?**  
+
+Siga os passos abaixo para configurar o ambiente e executar os scripts corretamente.
+
+### **1. Crie um ambiente virtual**  
 
 ```
 python -m venv venv
 ```
 
-2. Ative seu venv:
+### **2. Ative seu venv:**
 
 ```bash
 # Linux:
@@ -22,28 +26,49 @@ source venv/bin/activate
 source venv/Scripts/activate
 ```
 
-3. Após ativado, instale o pacote listadas em requirements.txt:
+### **3. Após ativado, instale o pacote de bibliotecas listadas em requirements.txt:**
 
 ```shell
 pip install -r requirements.txt
 ```
 
-4. Para rodar a análise exploratória de dados no Python, basta rodar 
+### **4. Executar a análise exploratória**
+Caso queira rodar a análise exploratória de dados no Python diretamente, execute o seguinte comando:
 
+```shell
+python analytics/nome_do_arquivo.py
+```
 
-4. Execute o script *save_model.py* para treinar e salvar o modelo. Isso gerará o arquivo modelo.pkl na pasta *model*.
+### **5. Executar a Análise Interativa no Jupyter Notebook**
+Se preferir rodar o notebook interativamente, execute o seguinte comando para abrir o Jupyter Notebook:
+
+```shell
+jupyter notebook
+
+```
+
+Depois, navegue até a pasta *analytics/* e abra o arquivo *LH_CD_ANTONIONETO.ipynb.*
+No Jupyter Notebook, clique em "Kernel" → "Restart & Run All" para rodar todas as células automaticamente e gerar os gráficos novamente.
+
+Alternativamente, o notebook também pode ser aberto e executado no Google Colab.
+
+### **6. Treinar e salvar o modelo**
+Execute o script abaixo para treinar e salvar o modelo. Isso gerará o arquivo *modelo.pkl* dentro da pasta *model/*.
 
 ```shell
 python model/save_model.py
 ```
 
-5. Após o arquivo *modelo.pkl* ter sido gerado (caso não tenha sido gerado anteriormente), você pode usar o script *load_model.py* para carregar o modelo e fazer previsões.
+### **7. Carregar o modelo e fazer previsões**
+Caso o arquivo *modelo.pkl* já tenha sido gerado, você pode utilizar o script abaixo para carregá-lo e fazer previsões.
+
 ```shell
 python model/load_model.py
 ```
 
-# Observação:
-Caso o arquivo com a base de dados seja mudado, seja o nome ou o local ou o arquivo completo, seu caminho deve ser ajustado dentro do arquivo *save_model.py*, na variável *file_path*, para que os resultados sejam visualiados corretamente.
+# Observação importante:
+Caso o arquivo com a base de dados seja alterado (seja o nome, local ou estrutura), o caminho do arquivo deve ser atualizado dentro do script *save_model.py*.
+Isso deve ser feito na variável *file_path* para garantir que o modelo seja treinado corretamente e os resultados possam ser visualizados sem erros.
 
 # Desenvolvido por:
 
