@@ -7,19 +7,17 @@ Original file is located at
     https://colab.research.google.com/drive/1Io4BHAA8_G4fGR6597kpeTz73OyNwt3T
 
 # Análise Exploratória de Dados (EDA)
-Montagem inicial do análise exploratória de dados. Dadas as colunas apresentadas, foram removidas as colunas *host_id*, *host_name*, *ultima_review* e *calculado_host_listings_count* por não apresentarem relevância para a análise. Além disso, foram removidas linhas que não apresentavam informações na coluna *price* e *disponibilidade_365* para que não houvesse interferência negativa nas análises.
-
-Para a análise, foram utilizadas bibliotecas indicadas para gerar gráficos, como seaborn, matplotlib e counter, além do pandas que auxiliou em praticamente todo o processo de manuseio de informações.
+Montagem inicial da análise exploratória de dados.
 """
 
 import pandas as pd
 
-file_path = '/content/drive/MyDrive/Indicium_2025/teste_indicium_precificacao.csv'
+file_path = 'data/teste_indicium_precificacao.csv'
 df = pd.read_csv(file_path)
 df = df[df['price'] > 0]
 df = df[df['disponibilidade_365'] > 0]
 df = df.drop(['host_id', 'host_name', 'ultima_review', 'calculado_host_listings_count'], axis=1)
-df.head()
+df.describe()
 
 """A primeira análise feita foi de distribuição de preços para verificar se existe grande variação de valores no dataset."""
 
@@ -31,25 +29,26 @@ sns.histplot(df['price'], bins=50, kde=True)
 plt.title('Distribuição de Preços')
 plt.show()
 
-# plt.hist(df['price'], bins=10, color='skyblue', edgecolor='black')
-# plt.title('Distribuição de Preços')
-# plt.xlabel('Preço por noite')
-# plt.ylabel('Frequência')
-# plt.show()
+"""Análise dos valores e identificação de outliers. Foi feita a remoção dos itens com esses valores para não criar ruídos na análise final."""
 
-"""Também foi feita verificação da existência de *outliers*, valores que fogem do padrão médio geral. Para isso, foram verificadas a média de preços e o desvio padrão para gerar limites e entender quais seriam os valores aceitáveis dentro do dataset."""
+import numpy as np
 
-media_precos = df['price'].mean()
-desvio_padrao_precos = df['price'].std()
-print(f"Média dos preços de aluguel: {media_precos:.2f}")
-print(f"Desvio padrão dos preços de aluguel: {desvio_padrao_precos:.2f}")
+Q1 = df['price'].quantile(0.25)
+Q3 = df['price'].quantile(0.75)
+IQR = Q3 - Q1
 
-limite_inf_precos = media_precos - 3 * desvio_padrao_precos
-limite_sup_precos = media_precos + 3 * desvio_padrao_precos
+limite_inferior = Q1 - 1.5 * IQR
+limite_superior = Q3 + 1.5 * IQR
 
-precos_outliers = df[(df['price'] > limite_sup_precos) | (df['price'] < limite_inf_precos)]
-print(f"Valores aceitáveis estão entre {limite_inf_precos:.2f} a {limite_sup_precos:.2f}")
-print(f"Quantidade de outliers: {precos_outliers.shape[0]}")
+print("Q1R:", Q1)
+print("Q3:", Q3)
+print("IQR:", IQR)
+print("Limite Inferior:", limite_inferior)
+print("Limite Superior:", limite_superior)
+
+df = df[(df['price'] >= limite_inferior) & (df['price'] <= limite_superior)]
+
+df.describe()
 
 sns.boxplot(data=df, x=df['price'])
 plt.title("Boxplot dos preços de aluguel por noite")
@@ -134,106 +133,11 @@ contagem_nomes_caros = sorted(Counter(nomes_mais_caros).most_common(20), key=lam
 contagem_nomes_baratos = sorted(Counter(nomes_mais_baratos).most_common(20), key=lambda x: x[1], reverse=True)
 
 print("Quantidade de itens encontrados em anúncios caros:", len(contagem_nomes_caros))
-print("Palavras mais comuns em anúncios caros:", contagem_nomes_caros)
-print("Quantidade de itens encontrados em anúncios baratos:", len(contagem_nomes_baratos))
-print("Palavras mais comuns em anúncios baratos:", contagem_nomes_baratos)
+print("Palavras mais comuns em anúncios caros:")
+for palavra, contagem in contagem_nomes_caros:
+    print(f" - {palavra}: {contagem}")
 
-"""# Preparação e transformação dos dados
-Inicialmente, serão descartadas as linhas que possuírem valores ausentes. Em seguida, vamos separar a coluna *price* do restante do dataframe.
-"""
-
-df = df.dropna(axis=0)
-y = df['price']
-features = ['id', 'bairro_group', 'bairro', 'latitude', 'longitude', 'room_type', 'minimo_noites', 'numero_de_reviews', 'reviews_por_mes', 'disponibilidade_365']
-X = df[features]
-X.head()
-
-"""Em seguida, ocorrerá a transformação dos dados da variável *bairro* utilizando ***Label Encoder***"""
-
-from sklearn.preprocessing import LabelEncoder
-
-label_enc = LabelEncoder()
-# X = X.copy()
-X['bairro'] = label_enc.fit_transform(X['bairro'])
-X.head()
-
-print(X.isnull().sum())
-
-"""Na sequência, transformaremos *bairro_group* e *room_type* utilizando ***One-Hot Encoder***"""
-
-# print(X.shape)  # Antes do OneHotEncoder
-# print(X[['bairro_group', 'room_type']].shape)  # Veja se bate
-
-# print(X[['bairro_group', 'room_type']].isnull().sum())  # Verifique valores nulos
-
-from sklearn.preprocessing import OneHotEncoder
-
-encoder = OneHotEncoder(sparse_output=False)
-X_encoded = encoder.fit_transform(X[['bairro_group', 'room_type']])
-
-# Convertendo para DataFrame e juntando ao dataset original
-X_encoded_df = pd.DataFrame(X_encoded, columns=encoder.get_feature_names_out(['bairro_group', 'room_type']))
-X_encoded_df.index = X.index
-X = pd.concat([X, X_encoded_df], axis=1).drop(columns=['bairro_group', 'room_type'])
-print(X.select_dtypes(include=['object']).columns)
-
-X.head()
-
-# print(X.shape)  # Antes da codificação
-# print(X_encoded_df.shape)  # DataFrame gerado pelo OneHotEncoder
-# print(y.shape)  # Certifique-se de que não mudou
-# print(X.index.equals(X_encoded_df.index))  # Verifica se os índices são iguais
-
-"""# Separação e Treinamento dos dados
-
-Pré-processamento de dados (latitude e longitude). Não é necessário fazer ajuste de escala pois os valores apresentados já se encontram dentro do modelo padrão de informação da categoria.
-"""
-
-df[['latitude', 'longitude']].head()
-
-"""Hiperparametrização, divisão e treinamento de dados"""
-
-from sklearn.model_selection import RandomizedSearchCV
-from sklearn.ensemble import RandomForestRegressor
-import numpy as np
-
-# Definir os hiperparâmetros a serem testados
-param_grid = {
-    'n_estimators': [10, 50, 100, 200],  # Número de árvores
-    'max_depth': [None, 10, 20, 30],  # Profundidade máxima
-    'min_samples_split': [2, 5, 10],  # Número mínimo de amostras para dividir um nó
-    'min_samples_leaf': [1, 2, 4],  # Número mínimo de amostras em uma folha
-    'bootstrap': [True, False]  # Amostragem com ou sem reposição
-}
-train_X, val_X, train_y, val_y = train_test_split(X, y, random_state=0, test_size=0.2)
-
-# Criar o modelo base
-rf_model = RandomForestRegressor(random_state=42)
-
-# Configurar o RandomizedSearchCV
-random_search = RandomizedSearchCV(
-    estimator=rf_model,
-    param_distributions=param_grid,
-    n_iter=10,  # Número de combinações aleatórias a serem testadas
-    cv=3,  # Validação cruzada em 3 partes
-    scoring='neg_root_mean_squared_error',  # Avaliar usando RMSE
-    n_jobs=-1,  # Paralelizar o processo
-    random_state=42
-)
-
-# Executar o ajuste dos hiperparâmetros no conjunto reduzido
-random_search.fit(train_X, train_y)
-
-# Exibir os melhores hiperparâmetros encontrados
-print("Melhores hiperparâmetros:", random_search.best_params_)
-
-# Treinar o modelo final com os melhores hiperparâmetros
-best_rf_model = random_search.best_estimator_
-best_rf_model.fit(train_X, train_y)
-
-# Fazer previsões e avaliar o novo modelo
-predictions = best_rf_model.predict(val_X)
-mse = mean_squared_error(val_y, predictions)  # Calcula o erro quadrático médio (MSE)
-rmse = np.sqrt(mse)  # Calcula a raiz quadrada do MSE
-
-print(f"Novo RMSE após ajuste dos hiperparâmetros: {rmse:.2f}")
+print("\nQuantidade de itens encontrados em anúncios baratos:", len(contagem_nomes_baratos))
+print("Palavras mais comuns em anúncios baratos:")
+for palavra, contagem in contagem_nomes_baratos:
+    print(f" - {palavra}: {contagem}")

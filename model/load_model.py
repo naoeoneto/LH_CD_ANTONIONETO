@@ -1,6 +1,6 @@
 import pandas as pd
 import pickle
-from sklearn.preprocessing import LabelEncoder, OneHotEncoder
+
 
 with open('model/modelo.pkl', 'rb') as file:
     data = pickle.load(file)
@@ -30,21 +30,16 @@ new_house = {
 new_house_df = pd.DataFrame([new_house])
 
 try:
-    # Selecionando as mesmas features usadas no treinamento
     features = ['id', 'bairro_group', 'bairro', 'latitude', 'longitude', 'room_type', 'minimo_noites', 'numero_de_reviews', 'reviews_por_mes', 'disponibilidade_365']
     X_house = new_house_df[features]
 
-    X_house['bairro'] = label_enc.transform(X_house['bairro'])  # LabelEncoder já treinado
-    X_encoded = one_hot_enc.transform(X_house[['bairro_group', 'room_type']])  # OneHotEncoder já treinado
+    X_house['bairro'] = label_enc.transform(X_house['bairro'])
+    X_encoded = one_hot_enc.transform(X_house[['bairro_group', 'room_type']])
 
-    # Criando DataFrame com as colunas corretas
     X_encoded_df = pd.DataFrame(X_encoded, columns=one_hot_enc.get_feature_names_out(['bairro_group', 'room_type']))
     X_encoded_df.index = X_house.index
-
-    # Concatenando os dados transformados
     X_house_transformed = pd.concat([X_house, X_encoded_df], axis=1).drop(columns=['bairro_group', 'room_type'])
 
-    # Fazendo a previsão
     y_new_pred = model.predict(X_house_transformed)
     print(f'O valor estimado para aluguel do imóvel é de R${y_new_pred[0]:.2f}')
 except Exception as e:

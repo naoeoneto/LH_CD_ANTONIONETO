@@ -26,6 +26,10 @@ source venv/Scripts/activate
 
 ```shell
 pip install -r requirements.txt
+```
+
+4. Para rodar a análise exploratória de dados no Python, basta rodar 
+
 
 4. Execute o script *save_model.py* para treinar e salvar o modelo. Isso gerará o arquivo modelo.pkl na pasta *model*.
 
