@@ -1,0 +1,18 @@
+# Núcleo científico
+pandas==2.2.2
+numpy==1.26.4
+scikit-learn==1.5.1
+scipy==1.13.1
+
+# Visualização
+matplotlib==3.9.2
+seaborn==0.13.2
+wordcloud==1.9.3
+
+# Exportação e serialização
+joblib==1.4.2
+pickle-mixin==1.0.2
+
+# Ambiente notebook (se for rodar no Jupyter/Colab localmente)
+jupyter==1.0.0
+notebook==7.2.1
