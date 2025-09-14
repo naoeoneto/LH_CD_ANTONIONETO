@@ -12,7 +12,7 @@ O objetivo é, a partir de uma base de dados de filmes do IMDb, realizar uma an�
 
 ## ⚙️ Como rodar o projeto
 
-Você pode rodar de duas formas:  
+Você pode rodar a análise exploratória de dados de duas formas:  
 
 ### ▶️ Abrir direto no Google Colab
 Clique no badge acima ou [neste link](https://colab.research.google.com/drive/1pa4z_qTjtDvlhBCkKfrV07lHcX_AxQbV?usp=sharing) para abrir o notebook no Colab.  
@@ -44,8 +44,13 @@ source venv/Scripts/activate
 pip install -r requirements.txt
 ```
 
+### 4. Rodar script da EDA
+Caso queira executar na máquina o arquivo python com o estudo, basta executar o comando a seguir.
+```bash
+python3 lh_cd_antonioneto.py
+```
 
-### 4. Treinar e salvar o modelo
+### 5. Treinar e salvar o modelo
 Execute o script abaixo para treinar e salvar o modelo.
 O arquivo modelo.pkl será gerado dentro da pasta *model/*.
 ```bash

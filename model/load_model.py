@@ -7,7 +7,6 @@ MODEL_PATH = os.path.join(BASE_DIR, "modelo.pkl")
 with open(MODEL_PATH, 'rb') as f:
     model = pickle.load(f)
 
-# Exemplo de predição
 new_movie = {
     'Series_Title':'The Shawshank Redemption',
     'Released_Year':"1994",
